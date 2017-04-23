@@ -1,4 +1,5 @@
 import * as types from './actionTypes';
+import * as loginActions from './loginActions';
 
 const loading = () => ({
   type: types.LOADING,
@@ -9,17 +10,19 @@ const refreshSearchResult = searchResult => ({
   searchResult,
 });
 
-export function fetchSearch(host, word) {
+export function fetchSearch(word) {
   return (dispatch) => {
     dispatch(loading());
 
     if (word === '') return dispatch(refreshSearchResult([]));
 
-    return fetch(`${host}/users/search/${word}`)
-      .then((searchResult) => {
-        const parsedData = JSON.parse(searchResult._bodyText);
-        if (parsedData.length === 0) return dispatch(refreshSearchResult([]));
-        return dispatch(refreshSearchResult(parsedData));
+    return dispatch(loginActions.fetchWithHeaders(`users/search/${word}`, 'GET'))
+      .then((searchedUsers) => {
+        const parsedUsers = JSON.parse(searchedUsers._bodyText).result;
+        if (parsedUsers.length > 0) {
+          return dispatch(refreshSearchResult(parsedUsers));
+        }
+        dispatch(refreshSearchResult([]));
       });
   };
 }

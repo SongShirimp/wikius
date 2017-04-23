@@ -1,4 +1,5 @@
 import * as types from './actionTypes';
+import * as loginActions from './loginActions';
 
 const loading = () => ({
   type: types.LOADING,
@@ -38,12 +39,12 @@ export const setFlagDetailBody = flagDetailBody => ({
   flagDetailBody,
 });
 
-export const setZoomLevelState = zoomLevel => ({
-  type: types.SET_ZOOM_LEVEL_STATE,
-  zoomLevel,
+export const refreshMap = map => ({
+  type: types.REFRESH_MAP,
+  map,
 });
 
-export function getUserRegion(cb) {
+export function getUserRegion(cb, animRegion) {
   return (dispatch, getState) => {
     dispatch(loading());
     const { region } = getState().mapManager;
@@ -52,14 +53,18 @@ export function getUserRegion(cb) {
       const userRegion = Object.assign({}, region, {
         latitude: position.coords.latitude,
         longitude: position.coords.longitude,
+        latitudeDelta: 0.009927655360755239,
+        longitudeDelta: 0.015449859201908112,
       });
+
       dispatch(setUserRegion(userRegion));
-      dispatch(initUserRegion());
+      animRegion ? dispatch(refreshGPS(animRegion)) : dispatch(initUserRegion());
       if (cb !== undefined) cb();
     }, (err) => {
       console.log(err, "Can't use GPS");
+
       dispatch(setUserRegion(region));
-      dispatch(initUserRegion());
+      animRegion ? dispatch(refreshGPS(animRegion)) : dispatch(initUserRegion());
       if (cb !== undefined) cb();
     }, {
       enableHighAccuracy: true,
@@ -71,7 +76,6 @@ export function getUserRegion(cb) {
 export function fetchFlags(n = 100) {
   return (dispatch, getState) => {
     dispatch(loading());
-    const { host } = getState().logInManager;
     const { region } = getState().mapManager;
 
     const calcNearest = (myRegion, flags, numberOfFlags) => {
@@ -96,9 +100,9 @@ export function fetchFlags(n = 100) {
       return result;
     };
 
-    return fetch(`${host}/flags`)
+    return dispatch(loginActions.fetchWithHeaders('flags', 'GET'))
       .then((flags) => {
-        const parsedFlags = JSON.parse(flags._bodyText);
+        const parsedFlags = JSON.parse(flags._bodyText).flags;
         const nearestFlags = calcNearest(region, parsedFlags, n);
         dispatch(refreshFlags(nearestFlags));
       });
@@ -108,26 +112,16 @@ export function fetchFlags(n = 100) {
 export function scribble(title, message) {
   return (dispatch, getState) => {
     dispatch(loading());
-    const { nickname } = getState().nicknameManager;
-    const { host } = getState().logInManager;
 
     return dispatch(getUserRegion(() => {
       const { userRegion } = getState().mapManager;
       const region = userRegion;
 
-      fetch(`${host}/flags`, {
-        method: 'POST',
-        headers: {
-          'Accept': 'application/json',
-          'Content-Type': 'application/json',
-        },
-        body: JSON.stringify({
-          title,
-          nickname,
-          region,
-          message,
-        }),
-      })
+      return dispatch(loginActions.fetchWithHeaders('flags/me', 'POST', {
+        title,
+        region,
+        message,
+      }))
       .then(() => {
         dispatch(fetchFlags());
       });
@@ -164,12 +158,11 @@ export function scribble(title, message) {
 export function deleteFlag() {
   return (dispatch, getState) => {
     dispatch(loading());
-    const { host } = getState().logInManager;
     const { idx } = getState().mapManager.flagDetail;
 
-    return fetch(`${host}/flags/${idx}`, {
-      method: 'DELETE',
-    })
+    return dispatch(loginActions.fetchWithHeaders('flags/me', 'DELETE', {
+      idx,
+    }))
     .then(() => {
       dispatch(fetchFlags());
     });

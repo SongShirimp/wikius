@@ -1,43 +1,30 @@
 import React, { Component } from 'react';
-import {
-  View,
-  Text,
-  Button,
-  Alert,
-} from 'react-native';
+import { View, Text, Button, Alert } from 'react-native';
 import PopupDialog from 'react-native-popup-dialog';
-
-const propTypes = {
-  deleteFlag: React.PropTypes.func.isRequired,
-  setFlagDetailBody: React.PropTypes.func.isRequired,
-  windowSize: React.PropTypes.object.isRequired,
-  flag: React.PropTypes.object.isRequired,
-};
 
 class FlagDetail extends Component {
   constructor() {
     super();
     this.state = {
-      button: (
-        <Button
-          title="삭제"
-          onPress={() => Alert.alert(
-            '경고',
-            '정말 삭제하시겠습니까?',
-            [
-              { text: '아니오' },
-              { text: '네',
-                onPress: () => {
-                  this.flagDetailBody.closeDialog();
-                  this.props.deleteFlag();
-                },
-              },
-            ],
-            { cancelable: false },
-          )}
-        />
-      ),
+      button: (<Button title="삭제" onPress={this.deleteAlert} />),
     };
+  }
+
+  deleteAlert() {
+    return Alert.alert(
+      '경고',
+      '정말 삭제하시겠습니까?',
+      [
+        { text: '아니오' },
+        { text: '네',
+          onPress: () => {
+            this.flagDetailBody.closeDialog();
+            this.props.deleteFlag();
+          },
+        },
+      ],
+      { cancelable: false },
+    );
   }
 
   render() {
@@ -64,7 +51,5 @@ class FlagDetail extends Component {
     );
   }
 }
-
-FlagDetail.propTypes = propTypes;
 
 export default FlagDetail;

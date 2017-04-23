@@ -2,9 +2,16 @@
 export const LOADING = 'LOADING';
 
 /* --------- logInManager --------- */
+export const CHANGE_ID_ON_TEXT_INPUT = 'CHANGE_ID_ON_TEXT_INPUT';
+export const CHANGE_PASSWORD_ON_TEXT_INPUT = 'CHANGE_PASSWORD_ON_TEXT_INPUT';
 export const LOGIN = 'LOGIN';
 export const LOGOUT = 'LOGOUT';
-export const REFRESH_USER = 'REFRESH_USER';
+
+/* --------- registerManager --------- */
+export const CHECK_PROPER_ID = 'CHECK_PROPER_ID';
+export const INPUT_PASSWORD = 'INPUT_PASSWORD';
+export const INPUT_PASSWORD2 = 'INPUT_PASSWORD2';
+export const REFRESH_CHECK_PROPER_PASSWORD_TEXT = 'REFRESH_CHECK_PROPER_PASSWORD_TEXT';
 
 /* --------- nicknameManager --------- */
 export const INPUT_NICKNAME = 'INPUT_NICKNAME';
@@ -19,10 +26,14 @@ export const INIT_USER_REGION = 'INIT_USER_REGION';
 export const SET_SCRIBBLE_INPUT = 'SET_SCRIBBLE_INPUT';
 export const SET_FLAG_DETAIL = 'SET_FLAG_DETAIL';
 export const SET_FLAG_DETAIL_BODY = 'SET_FLAG_DETAIL_BODY';
-export const SET_ZOOM_LEVEL_STATE = 'SET_ZOOM_LEVEL_STATE';
+export const REFRESH_MAP = 'REFRESH_MAP';
 
 /* --------- profileManager --------- */
 export const REFRESH_PROFILE = 'REFRESH_PROFILE';
+export const REFRESH_TIMELINE = 'REFRESH_TIMELINE';
 
 /* --------- searchManager --------- */
 export const REFRESH_SEARCH_RESULT = 'REFRESH_SEARCH_RESULT';
+
+/* --------- friendsManager --------- */
+export const REFRESH_FRIENDS = 'REFRESH_FRIENDS';

@@ -1,11 +1,12 @@
 import React, { Component } from 'react';
+import { View, Button, StyleSheet } from 'react-native';
 import { connect } from 'react-redux';
 import { Actions } from 'react-native-router-flux';
-import {
- View,
- Button,
- StyleSheet,
-} from 'react-native';
+
+import BackButton from '../dumbComponents/onRegisterComponents/backButton';
+import * as loginActions from '../../actions/loginActions';
+import * as profilesActions from '../../actions/profilesActions';
+import { centerCenterStyle } from '../../../../configure';
 
 const styles = StyleSheet.create({
   nickname: {
@@ -27,7 +28,7 @@ const styles = StyleSheet.create({
 class ProfileSetting extends Component {
  render() {
    return (
-    <View style={[styles.direction]}>
+    <View style={centerCenterStyle}>
       <View>
         <Button
           style={[styles.nickname]}
@@ -42,17 +43,33 @@ class ProfileSetting extends Component {
           title="change State Message"
         />
       </View>
+      <BackButton
+        callback={() => {
+          this.props.getMyData()
+          .then((data) => {
+            const userInProfile = {
+              idx: data.idx,
+              nickname: data.nickname,
+              image: data.img,
+              stateMessage: data.state_message,
+            };
+
+            this.props.moveToProfiles(userInProfile);
+          });
+        }}
+      />
     </View>
    );
  }
 }
 
 const mapStateToProps = state => ({
-
+  scene: state.routes.scene,
 });
 
 const mapDispatchToProps = dispatch => ({
-
+  getMyData: () => dispatch(loginActions.getMyData()),
+  moveToProfiles: userInProfile => dispatch(profilesActions.moveToProfiles(userInProfile)),
 });
 
 ProfileSetting = connect(mapStateToProps, mapDispatchToProps)(ProfileSetting);
